@@ -1,0 +1,10 @@
+{
+    "full_name": "Mohamed Seyam",
+    "email": "seyam@gmail.com",
+    "project_name": "ai in medicine project",
+    "project_slug": "{{cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_')}}",
+    "project_description": "",
+    "version": "0.1.0",
+    "use_unittest": "y",
+    "license": "Seyam License"
+}
