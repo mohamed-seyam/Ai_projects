@@ -1,17 +1,14 @@
+import os 
+
 import pandas as pd 
 import numpy as np 
 import matplotlib.pyplot as plt 
-import os 
 
-from helpers.test import (
-    read_data,
-    investigate_single_image,
-    investigate_pixel_value_distribution,
-    compare_pixel_distribution,
-    check_for_leakage,
-    visualize_images,
-    explore_data
-)
+from helpers.io_ops import read_data
+from helpers.plot_ops import (investigate_pixel_value_distribution, 
+                             compare_pixel_distribution,
+                             investigate_single_image, 
+                             plot_class_counts)
 
 def visualize_images(df):
     
@@ -69,48 +66,55 @@ if __name__ == "__main__":
     
     # explore_data(train_df)
     
-    # 1.4 Data Visualization
+    # # 1.4 Data Visualization
 
     # print('Display Random Images')
     # visualize_images(df=train_df)
 
-    #1.5 Investigating a Single Image
-    img = train_df.Image[0]
-    raw_img = plt.imread(os.path.join(image_dir, img))
+    # # 1.5 Investigating a Single Image
+    # img = train_df.Image[0]
+    # raw_img = plt.imread(os.path.join(image_dir, img))
     # investigate_single_image(raw_img, title="Chest Xray Image")
     
-    # 1.6 Investigating Pixel Value Distribution
-    img = train_df.Image[0]
-    raw_img = plt.imread(os.path.join(image_dir, img))
-    investigate_pixel_value_distribution(raw_img)
-    # 2. Image Preprocessing in Keras
+    # # 1.6 Investigating Pixel Value Distribution
+    # img = train_df.Image[0]
+    # raw_img = plt.imread(os.path.join(image_dir, img))
+    # investigate_pixel_value_distribution(raw_img)
     
-    # Import data generator from keras 
-    from keras.preprocessing.image import ImageDataGenerator
-    image_generator = ImageDataGenerator( 
-        samplewise_center= True, # each img have 0 mean
-        samplewise_std_normalization= True # each img have 1 std deviation 
-    )
+    # # 2. Image Preprocessing in Keras 
+    # # Import data generator from keras 
+    # from keras.preprocessing.image import ImageDataGenerator
+    # image_generator = ImageDataGenerator( 
+    #     samplewise_center= True, # each img have 0 mean
+    #     samplewise_std_normalization= True # each img have 1 std deviation 
+    # )
 
-    # 2.1 Standardization
+    # # 2.1 Standardization
+    # # flow from specified directory with specified batch size and target size 
+    # generator = image_generator.flow_from_dataframe(
+    #     dataframe=train_df,
+    #     directory=image_dir,
+    #     x_col="Image", # Features
+    #     # let's say we build model for mass detection 
+    #     y_col="Mass", # labels
+    #     class_mode="raw", # mass label should be in dataframe 
+    #     batch_size= 1, # images per batch 
+    #     target_size= (320,320),
+    #     shuffle=False
+    # )
 
-    # flow from specified directory with specified batch size and target size 
-    generator = image_generator.flow_from_dataframe(
-        dataframe=train_df,
-        directory=image_dir,
-        x_col="Image", # Features
-        # let's say we build model for mass detection 
-        y_col="Mass", # labels
-        class_mode="raw", # mass label should be in dataframe 
-        batch_size= 1, # images per batch 
-        target_size= (320,320),
-        shuffle=False
-    )
-
-    # Plot Processed Image 
-    generated_imgs, label = generator.__getitem__(0)
-    raw_img_n = generated_imgs[0]
+    # # Plot Processed Image 
+    # generated_imgs, label = generator.__getitem__(0)
+    # raw_img_n = generated_imgs[0]
     # investigate_single_image(raw_img_n, title="Chest Xray Image")
     
-    # Include a histogram of the distribution of the pixels
-    compare_pixel_distribution(raw_img, raw_img_n)
+    # investigate_pixel_value_distribution(raw_img_n)
+    # # Include a histogram of the distribution of the pixels
+    # compare_pixel_distribution(raw_img, raw_img_n)
+
+    # Plot up the distribution of class counts 
+    class_counts = train_df.sum().drop(["PatientId", "Image"])
+    plot_class_counts()
+    
+    
+    
