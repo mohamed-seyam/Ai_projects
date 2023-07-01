@@ -75,9 +75,9 @@ def get_test_and_valid_generator(valid_df, test_df, train_df, image_dir, x_col, 
     # get generator to sample dataset
     raw_train_generator = ImageDataGenerator().flow_from_dataframe(
         dataframe=train_df, 
-        directory=IMAGE_DIR, 
+        directory=image_dir, 
         x_col="Image", 
-        y_col=labels, 
+        y_col=y_cols, 
         class_mode="raw", 
         batch_size=sample_size, 
         shuffle=True, 
