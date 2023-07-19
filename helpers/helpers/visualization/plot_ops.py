@@ -56,3 +56,4 @@ def plot_class_counts(df: pd.DataFrame) -> plt.figure:
     plt.xlabel('Number of Patients', fontsize=15)
     plt.ylabel('Diseases', fontsize=15)
     plt.show()
+

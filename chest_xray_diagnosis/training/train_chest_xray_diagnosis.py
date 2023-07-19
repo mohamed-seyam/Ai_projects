@@ -150,7 +150,7 @@ def main():
                               validation_data=valid_generator,
                               steps_per_epoch=100, 
                               validation_steps=25, 
-                              epochs = 3, 
+                              epochs = 10, 
                               callbacks = callbacks,
                               initial_epoch = initial_epoch)
     
