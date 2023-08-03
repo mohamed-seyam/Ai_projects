@@ -5,7 +5,7 @@ import cv2
 from keras import backend as K
 import tensorflow as tf
 
-from helpers.helpers.io.io_ops import load_image
+from helpers.io.df_io_ops import load_image
 
 
 def grad_cam(input_model, image, cls, layer_name, H=320, W=320):
