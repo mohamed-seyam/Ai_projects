@@ -8,12 +8,12 @@ import cv2
 import nibabel as nib
 
 
-from helpers.helpers.preprocessing.preprocessing import get_mean_std_per_batch
+from helpers.preprocessing.preprocessing import get_mean_std_per_batch
 
 
 
-def read_data(file_path:str)-> pd.DataFrame:
-    return pd.read_csv(file_path)
+def read_data(file_path:str, index_column = 0)-> pd.DataFrame:
+    return pd.read_csv(file_path, index_col= index_column)
 
 
 def load_image(img, image_dir, df, preprocess=True, H=320, W=320):
