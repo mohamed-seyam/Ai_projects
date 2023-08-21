@@ -13,7 +13,9 @@ from pytorch3d.renderer import (
     SoftPhongShader,
     SoftSilhouetteShader,
     HardFlatShader,
-    
+    TexturesVertex,
+    HardPhongShader,
+    Textures
 
 )
 
@@ -51,13 +53,16 @@ def load_normalize_mesh(data_dir, device):
     center = verts.mean(0)
     scale = max((verts - center).abs().max(0)[0])
     mesh.offset_verts_(-center)
-    mesh.scale_verts_((1.0 / float(scale)));
+    mesh.scale_verts_((1.0 / float(scale)))
+    # Initialize each vertex to be white in color.
+    # verts_rgb = torch.ones_like(verts)[None]  # (1, V, 3)
+    # mesh.textures = TexturesVertex(verts_features=verts_rgb.to(device))
     return mesh
 
 def generate_cameras_viewpoints(num_views, device):
     # Get a batch of viewing angles. 
-    elev = torch.linspace(0, 360, num_views)
-    azim = torch.linspace(-180, 180, num_views)
+    elev = torch.linspace(0, -90, num_views)
+    azim = torch.linspace(0, -180, num_views)
 
 
     # Initialize an OpenGL perspective camera that represents a batch of different 
@@ -93,9 +98,6 @@ def setup_renderer_and_lights(camera, device):
     # Create a Phong renderer by composing a rasterizer and a shader. The textured 
     # Phong shader will interpolate the texture uv coordinates for each vertex, 
     # sample from a texture image and apply the Phong lighting model
-    # Define a simple red color
-    red_color = torch.tensor([1.0, 0.0, 0.0])
-
     renderer = MeshRenderer(
         rasterizer=MeshRasterizer(
             cameras=camera, 
@@ -118,7 +120,7 @@ def main():
     mesh = load_normalize_mesh(data_dir, device)
     
     # the number of different viewpoints from which we want to render the mesh.
-    num_views = 30
+    num_views = 9
     cameras, R, T = generate_cameras_viewpoints(num_views, device)
         
     # We arbitrarily choose one particular view that will be used to visualize 
@@ -143,7 +145,7 @@ def main():
                                             T=T[None, i, ...]) for i in range(num_views)]
     
     # RGB images
-    image_grid(target_images.cpu().numpy(), rows=6, cols=5, rgb=True)
+    image_grid(target_images.cpu().numpy(), rows=3, cols=3, rgb=True)
     plt.show()
 
 

@@ -27,14 +27,18 @@ from pytorch3d.renderer import (
     RasterizationSettings, MeshRenderer, MeshRasterizer, BlendParams,
     SoftSilhouetteShader, HardPhongShader, PointLights, TexturesVertex,
 )
-
-def main():
+def setup_device():
+    # Set up device (GPU if available, else CPU)
     if torch.cuda.is_available():
         device = torch.device("cuda:0")
         torch.cuda.set_device(device)
     else:
         device = torch.device("cpu")
+    return device
 
+def main():
+    
+    device = setup_device()
     # Load the obj and ignore the textures and materials.
     verts, faces_idx, _ = load_obj("./data/meshes/teapot.obj")
     faces = faces_idx.verts_idx
