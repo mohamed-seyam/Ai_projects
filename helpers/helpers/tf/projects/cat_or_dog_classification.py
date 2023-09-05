@@ -6,30 +6,43 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 from helpers.tf.callbacks.tf_callbacks import TrackAccCallback
 
-def fetch_data(training_dir , validation_dir):
-    train_gen = ImageDataGenerator(rescale = 1/255.)
-    validation_gen = ImageDataGenerator(rescale = 1/255.)
 
-    train_generator = train_gen.flow_from_directory(
-        directory = training_dir,
-        target_size = (150, 150),
-        batch_size = 30,
-        class_mode = "binary"
+def train_val_generators(training_dir:str, 
+                         validation_dir:str
+                         )->tuple[ImageDataGenerator, ImageDataGenerator]:
+    """Creates the training and validation data generators"""
+
+    # Instantiate the ImageDataGenerator class (don't forget to set the arguments to augment the images)
+    train_datagen = ImageDataGenerator(rescale=1/255.,
+                                        rotation_range=40,
+                                        width_shift_range=.2,
+                                        height_shift_range=.2,
+                                        shear_range=.2,
+                                        zoom_range=.2,
+                                        horizontal_flip=True,
+                                        fill_mode="nearest")
+
+    # Pass in the appropriate arguments to the flow_from_directory method
+    train_generator = train_datagen.flow_from_directory(directory=training_dir,
+                                                        batch_size=50,
+                                                        class_mode="binary",
+                                                        target_size=(150, 150))
+
+    # Instantiate the ImageDataGenerator class (don't forget to set the rescale argument)
+    validation_datagen = ImageDataGenerator(
+        rescale = 1/255.
     )
 
-    validation_generator = validation_gen.flow_from_directory(
-        directory = validation_dir,
-        target_size = (150,150),
-        batch_size = 20,
-        class_mode = "binary"
-    )
+    # Pass in the appropriate arguments to the flow_from_directory method
+    validation_generator = validation_datagen.flow_from_directory(directory=validation_dir,
+                                                                    batch_size=30,
+                                                                    class_mode="binary",
+                                                                    target_size=(150, 150))
     return train_generator, validation_generator
 
-
 def train_cat_or_dog_model(train_gen, validation_gen):
+    
     callbacks = TrackAccCallback()
-
-
     model = tf.keras.models.Sequential([
         tf.keras.layers.Conv2D(16, (3,3), activation = "relu", input_shape = (150,150,3)),
         tf.keras.layers.MaxPooling2D((2,2)),
@@ -93,7 +106,7 @@ def main():
     train_dir = "data/tf/dogs_or_cats_data/training"
     validation_dir = "data/tf/dogs_or_cats_data/validation"
 
-    train_gen, validation_gen = fetch_data(train_dir, validation_dir)
+    train_gen, validation_gen = train_val_generators(train_dir, validation_dir)
     hist = train_cat_or_dog_model(train_gen, validation_gen) 
     show_accuracy_curves(hist)
 
