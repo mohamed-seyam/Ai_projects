@@ -8,8 +8,8 @@ from helpers.tf.callbacks.tf_callbacks import TrackAccCallback
 
 
 def train_val_generators(training_dir:str, 
-                         validation_dir:str
-                         )->tuple[ImageDataGenerator, ImageDataGenerator]:
+                         validation_dir:str,
+                         resize_shape = 150)->tuple[ImageDataGenerator, ImageDataGenerator]:
     """Creates the training and validation data generators"""
 
     # Instantiate the ImageDataGenerator class (don't forget to set the arguments to augment the images)
@@ -26,7 +26,7 @@ def train_val_generators(training_dir:str,
     train_generator = train_datagen.flow_from_directory(directory=training_dir,
                                                         batch_size=50,
                                                         class_mode="binary",
-                                                        target_size=(150, 150))
+                                                        target_size=(resize_shape, resize_shape))
 
     # Instantiate the ImageDataGenerator class (don't forget to set the rescale argument)
     validation_datagen = ImageDataGenerator(
@@ -37,7 +37,7 @@ def train_val_generators(training_dir:str,
     validation_generator = validation_datagen.flow_from_directory(directory=validation_dir,
                                                                     batch_size=30,
                                                                     class_mode="binary",
-                                                                    target_size=(150, 150))
+                                                                    target_size=(resize_shape, resize_shape))
     return train_generator, validation_generator
 
 def train_cat_or_dog_model(train_gen, validation_gen):
@@ -110,5 +110,18 @@ def main():
     hist = train_cat_or_dog_model(train_gen, validation_gen) 
     show_accuracy_curves(hist)
 
+def run_cats_or_dog_with_vgg():
+    from helpers.tf.models.vgg_16 import Vgg
+    train_dir = "data/tf/dogs_or_cats_data/training"
+    validation_dir = "data/tf/dogs_or_cats_data/validation"
+
+    train_gen, validation_gen = train_val_generators(train_dir, validation_dir, resize_shape = 224)
+    vgg = Vgg(num_classes=2)
+    vgg.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    history = vgg.fit(x=train_gen, validation_data=validation_gen, epochs=10)
+    show_accuracy_curves(history)
+
+
 if __name__ == "__main__":
-    main()
+    # main()
+    run_cats_or_dog_with_vgg()
