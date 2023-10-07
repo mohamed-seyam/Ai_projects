@@ -1,11 +1,6 @@
-import cv2
 import h5py
-import imageio
 import keras
-import matplotlib.pyplot as plt
 import numpy as np
-import tensorflow as tf
-from IPython.display import Image
 
 
 class VolumeDataGenerator(keras.utils.Sequence):

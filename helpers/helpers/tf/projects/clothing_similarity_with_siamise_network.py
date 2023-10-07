@@ -3,12 +3,9 @@
     """
 
 import tensorflow as tf
-
 import numpy as np
 import matplotlib.pyplot as plt
-from PIL import Image, ImageFont, ImageDraw
 import random
-
 from colorist import Color
 
 def create_pairs(x, digit_indices):

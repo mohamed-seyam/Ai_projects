@@ -2,8 +2,6 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Dense, Input
 from sklearn.model_selection import train_test_split
 
 def format_output(data):
@@ -61,19 +59,19 @@ def plot_metrics(history, metric_name, title, ylim=5):
 
 def create_model_with_functional_api(input_shape):
 
-    input_layer = Input(shape = input_shape)
-    first_dense = Dense(units = '128', activation = "relu")(input_layer)
-    second_dense = Dense(units = '128', activation = "relu")(first_dense)
+    input_layer = tf.keras.layers.Input(shape = input_shape)
+    first_dense = tf.keras.layers.Dense(units = '128', activation = "relu")(input_layer)
+    second_dense = tf.keras.layers.Dense(units = '128', activation = "relu")(first_dense)
 
     # Y1 output 
-    y1_output = Dense(units = '1', name = "y1_output")(second_dense)
-    third_dense = Dense(units = "64", activation = "relu")(second_dense)
+    y1_output = tf.keras.layers.Dense(units = '1', name = "y1_output")(second_dense)
+    third_dense = tf.keras.layers.Dense(units = "64", activation = "relu")(second_dense)
 
     # Y2 output
-    y2_output = Dense(units = '1', name = "y2_output")(third_dense)
+    y2_output = tf.keras.layers.Dense(units = '1', name = "y2_output")(third_dense)
 
     # define model 
-    model = Model(inputs = input_layer, outputs = [y1_output, y2_output])
+    model = tf.keras.Model(inputs = input_layer, outputs = [y1_output, y2_output])
 
     print(model.summary())
 

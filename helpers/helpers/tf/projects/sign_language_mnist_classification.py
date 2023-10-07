@@ -1,6 +1,6 @@
 import csv 
 import numpy as np 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator, array_to_img
+import tensorflow as tf
 
 def parse_data_from_input(filename):
   """
@@ -49,31 +49,21 @@ def train_val_generators(training_images, training_labels, validation_images, va
     training_images = np.expand_dims(training_images, axis = -1)
     validation_images = np.expand_dims(validation_images, axis = -1)
 
-    # Instantiate the ImageDataGenerator class 
-    # Don't forget to normalize pixel values 
-    # and set arguments to augment the images (if desired)
-    train_datagen = ImageDataGenerator(
+    train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
         rescale = 1/255.
     )
 
-
-    # Pass in the appropriate arguments to the flow method
     train_generator = train_datagen.flow(x=training_images,
                                         y=training_labels,
                                         batch_size=32) 
 
-  
-    # Instantiate the ImageDataGenerator class (don't forget to set the rescale argument)
-    # Remember that validation data should not be augmented
-    validation_datagen = ImageDataGenerator(
+    validation_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
         rescale = 1/255.
     )
 
-    # Pass in the appropriate arguments to the flow method
     validation_generator = validation_datagen.flow(x=validation_images,
                                                     y=validation_labels,
                                                     batch_size=32) 
-
 
 
     return train_generator, validation_generator
@@ -81,8 +71,7 @@ def train_val_generators(training_images, training_labels, validation_images, va
 
 
 def create_model():
-    import tensorflow as tf
-
+    """Creates a CNN model"""
     model = tf.keras.Sequential([
         tf.keras.layers.Conv2D(64, (3,3), activation = "relu", input_shape = (28,28,1)),
         tf.keras.layers.MaxPooling2D((2,2)), 

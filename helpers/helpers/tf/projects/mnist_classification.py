@@ -12,7 +12,7 @@ def fetch_data():
     
     return (x_train, y_train), (x_test, y_test)
 
-def train_mnist(x_train, y_train):
+def train_mnist_using_dense(x_train, y_train):
     
     # Instantiate the callback class
     callbacks = TrackAccCallback()
@@ -30,10 +30,7 @@ def train_mnist(x_train, y_train):
                   loss='sparse_categorical_crossentropy',                   
                   metrics=['accuracy'])     
     
-    # Fit the model for 10 epochs adding the callbacks
-    # and save the training history
     history = model.fit(x_train, y_train, epochs=10, callbacks=[callbacks])
-
 
     return model, history
 
@@ -61,8 +58,6 @@ def train_mnist_using_convolution(x_train, y_train):
                   loss='sparse_categorical_crossentropy',                   
                   metrics=['accuracy'])     
     
-    # Fit the model for 10 epochs adding the callbacks
-    # and save the training history
     history = model.fit(x_train, y_train, epochs=10, callbacks=[callbacks])
 
 

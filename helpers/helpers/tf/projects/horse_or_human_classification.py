@@ -1,15 +1,11 @@
-from helpers.tf.callbacks.tf_callbacks import TrackAccCallback
 import tensorflow as tf 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from tensorflow.keras import layers
-from tensorflow.keras import Model
-from tensorflow.keras.optimizers import RMSprop
+
+from helpers.tf.io.generators import train_val_generators
+from helpers.tf.callbacks.tf_callbacks import TrackAccCallback
 
 def fetch_data(train_dir, validation_dir):
-    from helpers.ai.io.generators import train_val_generators
     train_gen, validation_gen = train_val_generators(training_dir=train_dir, validation_dir=validation_dir)
     return train_gen, validation_gen
-
 
 
 def train_horse_or_human_model(train_generator, validation_generator):
@@ -52,11 +48,10 @@ def train_horse_or_human_model(train_generator, validation_generator):
 
 
 def train_horse_or_human_model_using_transfer_learning(train_gen, validation_gen):
-    from tensorflow.keras.applications.inception_v3 import InceptionV3
-    
+   
     local_weights_file = r'data\models_data\inception_v3_weights_tf_dim_ordering_tf_kernels_notop.h5'
     
-    pre_trained_model = InceptionV3(input_shape = (150, 150, 3),
+    pre_trained_model = tf.keras.applications.inception_v3.InceptionV3(input_shape = (150, 150, 3),
                                   include_top = False, 
                                   weights = None) 
 
@@ -87,7 +82,7 @@ def train_horse_or_human_model_using_transfer_learning(train_gen, validation_gen
     x = tf.keras.layers.Dense(1, activation = "sigmoid")(x)        
 
     # Create the complete model by using the Model class
-    model = Model(inputs= pre_trained_model.inputs, outputs= x)
+    model = tf.keras.Model(inputs= pre_trained_model.inputs, outputs= x)
 
     # Compile the model
     model.compile(optimizer = tf.keras.optimizers.RMSprop(lr = .001), 
@@ -96,9 +91,6 @@ def train_horse_or_human_model_using_transfer_learning(train_gen, validation_gen
     
     print(model.summary())
 
-    # Train the model
-    # Your model should achieve the desired accuracy in less than 15 epochs.
-    # You can hardcode up to 20 epochs in the function below but the callback should trigger before 15.
     callback = TrackAccCallback()
     history = model.fit(
       train_gen,
@@ -108,8 +100,7 @@ def train_horse_or_human_model_using_transfer_learning(train_gen, validation_gen
       validation_data = validation_gen,
       validation_steps=8, 
       callbacks = [callback])
-    
-    ### END CODE HERE
+
     return history
 def main():
     training_dir = './data/tf/horse-or-human-data/training-horse-or-human/'
