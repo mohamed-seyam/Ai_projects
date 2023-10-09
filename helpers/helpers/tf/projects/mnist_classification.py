@@ -73,5 +73,9 @@ def main():
     model, hist = train_mnist_using_convolution(x_train, y_train)
     evaluate_model(model, x_test, y_test)
 
+def test():
+    import tensorflow_datasets as tfds
+    ds = tfds.load('mnist', split='train', shuffle_files=True)
+    assert isinstance(ds, tf.data.Dataset)
 if __name__ == "__main__":
-    main()
+    test()
