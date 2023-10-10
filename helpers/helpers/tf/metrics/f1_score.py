@@ -30,11 +30,13 @@ class F1Score(tf.keras.metrics.Metric):
 
         return tf.math.divide_no_nan(2 * precision * recall, precision + recall)
     
+    @tf.function
     def reset_states(self):
         self.tp.assign(0)
+        self.tn.assign(0) 
         self.fp.assign(0)
         self.fn.assign(0)
-        self.tn.assign(0)
+
 
 
 if __name__ == "__main__":
@@ -45,3 +47,4 @@ if __name__ == "__main__":
     test_F1Score.tn = tf.Variable(7, dtype = 'int32')
     test_F1Score.fn = tf.Variable(9, dtype = 'int32')
     test_F1Score.result()
+    test_F1Score.reset_states()
