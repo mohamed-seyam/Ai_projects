@@ -1,9 +1,8 @@
-from helpers.tf.callbacks.tf_callbacks import TrackAccCallback
 import tensorflow as tf 
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from cmf_tools.helpers.tf.callbacks.tf_callbacks import TrackAccCallback
 
 def fetch_data():
-    gen = ImageDataGenerator(rescale = 1/255.)
+    gen =tf.image.preprocessing.image.ImageDataGenerator(rescale = 1/255.)
 
     train_generator = gen.flow_from_directory(
         directory = "./data/tf/happy_or_sad_data",
