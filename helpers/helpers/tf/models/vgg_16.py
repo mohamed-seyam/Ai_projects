@@ -72,6 +72,9 @@ class Vgg(tf.keras.Model):
 
 
 if __name__ == "__main__":
+
     vgg = Vgg(num_classes=10)
     vgg.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     
+    import tensorflow_datasets as tfds
+    datasets, info = tfds.load(name='mnist', with_info=True, as_supervised=True)

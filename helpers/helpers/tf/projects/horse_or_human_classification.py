@@ -1,4 +1,5 @@
 import tensorflow as tf 
+import tensorflow_datasets as tfds
 
 from helpers.tf.io.generators import train_val_generators
 from helpers.tf.callbacks.tf_callbacks import TrackAccCallback
@@ -102,6 +103,7 @@ def train_horse_or_human_model_using_transfer_learning(train_gen, validation_gen
       callbacks = [callback])
 
     return history
+
 def main():
     training_dir = './data/tf/horse-or-human-data/training-horse-or-human/'
     validation_dir = './data/tf/horse-or-human-data/validation-horse-or-human/'
@@ -109,5 +111,16 @@ def main():
     train_gen, validation_gen = fetch_data(training_dir, validation_dir)
     # train_horse_or_human_model(train_gen, validation_gen) 
     history  = train_horse_or_human_model_using_transfer_learning(train_gen, validation_gen)
+
+
+def train_horse_or_human_model_using_graph_mode_execution():
+    splits, info = tfds.load("horses_or_humans", as_supervised=True, with_info=True, split=["train[:80%]", "train[80%:]", "test"])
+    (train_examples, validation_examples, test_examples) = splits
+    num_examples = info.splits['train'].num_examples
+    num_classes = info.features['label'].num_classes 
+
+    print(num_classes)
+    print(num_examples)
+
 if __name__ == "__main__":
-    main()
+    train_horse_or_human_model_using_graph_mode_execution()
