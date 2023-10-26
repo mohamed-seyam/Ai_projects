@@ -78,17 +78,65 @@ def define_and_compile_model():
     return model
 
 
-def get_training_dataset(strategy, batch_size):
+def get_training_dataset(strategy: tf.distribute.Strategy, batch_size: int):
     with strategy.scope():
         training_dataset, info = tfds.load("caltech_birds2010", split = "train", with_info=True, as_supervised = True, try_gcs = True)
-        print(info)
+        training_dataset = training_dataset.map(read_image_tfds_with_original_bbox, num_parallel_calls = tf.data.experimental.AUTOTUNE)
+        training_dataset = training_dataset.shuffle(512, shuffle_each_iteration = True)
+        training_dataset = training_dataset.repeat()
+        training_dataset = training_dataset.batch(batch_size = batch_size)
+        training_dataset = training_dataset.prefetch(tf.data.experimental.AUTOTUNE)
+        return training_dataset
+    
+def get_validation_dataset(batch_size: int):
+    validation_dataset, info = tf.load("caltech_birds2010", split = "test", with_info = True, as_supervised = True, try_gcs = True)
+    validation_dataset = validation_dataset.map(read_image_tfds_with_original_bbox, num_parallel_calls = tf.data.experimental.AUTOTUNE)
+    validation_dataset = validation_dataset.batch(batch_size = batch_size)
+    validation_dataset = validation_dataset.repeat()
+    return validation_dataset
+
+
 
 def main():
     strategy = detect_hardware()
+    model = define_and_compile_model()
+        
     with strategy.scope():
         training_dataset = get_training_dataset(strategy, BATCH_SIZE)
-       
+        validation_dataset = get_validation_dataset(BATCH_SIZE)
+        length_of_training_dataset = len(training_dataset)
+        length_of_validation_dataset = len(validation_dataset)
+        print("Length of training dataset:", length_of_training_dataset)
+        print("Length of validation dataset:", length_of_validation_dataset)
+
+        steps_per_epoch = length_of_training_dataset // BATCH_SIZE
+        if steps_per_epoch % BATCH_SIZE > 0 :
+            steps_per_epoch += 1
+        
+        validation_steps = length_of_validation_dataset // BATCH_SIZE
+        if validation_steps % BATCH_SIZE > 0:
+            validation_steps += 1
+        
+        history = model.fit(training_dataset,
+                            steps_per_epoch = steps_per_epoch,
+                            epochs = EPOCHS,
+                            validation_data = validation_dataset,
+                            validation_steps = validation_steps)
+    
+    model.save("bird_bbox_model.h5")
+
+    # retrieve the images only (not bbox) from the validation dataset
+ 
+
+    
+
+
+        
+
+
+
 
 if __name__ == "__main__":
     BATCH_SIZE = 8
+    EPOCHS = 50
     main()
